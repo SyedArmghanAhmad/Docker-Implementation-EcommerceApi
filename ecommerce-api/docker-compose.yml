@@ -1,0 +1,91 @@
+version: '3.8'
+
+services:
+  web:
+    image: atmghan/ecommerce-web:latest  # Use the pushed image
+    ports:
+      - "8000:5000"
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+      - postgres
+    networks:
+      - backend
+    logging:  # Centralized logging configuration
+      driver: "json-file"
+      options:
+        max-size: "10m"  # Rotate logs after 10MB
+        max-file: "3"     # Keep up to 3 log files
+    deploy:  # Resource constraints
+      resources:
+        limits:
+          cpus: '0.5'  # Limit to 50% of a CPU core
+          memory: 512M  # Limit to 512MB RAM
+
+  redis:
+    image: redis:alpine
+    volumes:
+      - redis_data:/data  # Named volume for Redis
+    networks:
+      - backend
+    logging:  # Centralized logging configuration
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:  # Resource constraints
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 256M
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: ecommerce
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Named volume for PostgreSQL
+    networks:
+      - backend
+    logging:  # Centralized logging configuration
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:  # Resource constraints
+      resources:
+        limits:
+          cpus: '0.3'
+          memory: 512M
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - web
+    networks:
+      - backend
+    logging:  # Centralized logging configuration
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:  # Resource constraints
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M
+
+volumes:
+  redis_data:  # Named volume for Redis
+  postgres_data:  # Named volume for PostgreSQL
+
+networks:
+  backend:
+    driver: bridge

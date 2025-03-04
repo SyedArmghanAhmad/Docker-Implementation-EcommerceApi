@@ -1,0 +1,21 @@
+name: Deploy
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3  # Check out the repository code
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}  # Docker Hub username
+          password: ${{ secrets.DOCKER_PASSWORD }}     # Docker Hub access token
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v3
+        with:
+          context: .  # Build context (current directory)
+          push: true  # Push the image to Docker Hub
+          tags: atmghan/ecommerce-web:latest  # Tag the image with your Docker Hub username
