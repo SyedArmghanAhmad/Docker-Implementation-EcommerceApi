@@ -10,13 +10,13 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}  # Docker Hub username (e.g., "atmghan")
-          password: ${{ secrets.DOCKER_PASSWORD }}   # Docker Hub access token
+          username: ${{ secrets.DOCKER_USERNAME }}  # e.g., "atmghan"
+          password: ${{ secrets.DOCKER_PASSWORD }}   # Docker Hub token
 
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v3
         with:
-          context: .  # Build context (current directory)
-          file: ./ecommerce-api\Dockerfile  # Explicit path to Dockerfile
+          context: ./ecommerce-api  # Path to the directory containing Dockerfile
+          file: ./ecommerce-api/Dockerfile  # Explicit path to Dockerfile
           push: true
           tags: atmghan/ecommerce-web:latest
