@@ -17,6 +17,6 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .  # Build context (current directory)
-          file: ./Dockerfile  # Explicit path to Dockerfile
+          file: ./ecommerce-api\Dockerfile  # Explicit path to Dockerfile
           push: true
           tags: atmghan/ecommerce-web:latest
